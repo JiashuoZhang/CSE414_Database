@@ -67,3 +67,49 @@ group by f1.origin_city;
 -- but can be reached with one stop (i.e., with two flights). 
 -- Do not include Seattle as one of these destinations (even though you could get back 
 -- with two flights). Order results alphabetically. [256 rows]
+select distinct f2.dest_city
+from Flights f1, Flights f2
+where f1.origin_city = 'Seattle WA' and 
+		f1.dest_city = f2.origin_city and
+		f2.dest_city != 'Seattle WA' and
+		f2.dest_city not in
+							(select f3.dest_city
+							from Flights f3
+							where origin_city = 'Seattle WA')
+order by f2.dest_city;
+
+-- 5. List all cities that cannot be reached from Seattle though a direct flight 
+-- nor with one stop (i.e., with two flights). Do not forget to consider all cities 
+-- that appear in a flight as an origin_city. Order results alphabetically. 
+-- [3 or 4 rows]
+-- Returns 3 rows and takes 30s
+select distinct f.origin_city
+from Flights f
+where f.origin_city not in
+		(select distinct f2.dest_city
+		from Flights f1, Flights f2
+		where f1.origin_city = 'Seattle WA' and f1.dest_city = f2.origin_city
+		union
+		select distinct f3.dest_city
+		from Flights f3
+		where f3.origin_city = 'Seattle WA')
+order by f.origin_city;
+-- Devils Lake ND
+-- Hattiesburg/Laurel MS
+-- St. Augustine FL
+-- Victoria TX
+
+-- 5 mins
+select distinct f.origin_city
+from Flights f
+where 
+	f.origin_city not in
+		(select f1.dest_city
+		from Flights f1
+		where f1.origin_city = 'Seattle WA') and
+	f.origin_city not in
+		(select f3.dest_city
+		from Flights f2, Flights f3
+		where f2.origin_city = 'Seattle WA' and f2.dest_city = f3.origin_city)
+order by f.origin_city;
+
