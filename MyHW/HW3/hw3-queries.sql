@@ -113,3 +113,7 @@ where
 		where f2.origin_city = 'Seattle WA' and f2.dest_city = f3.origin_city)
 order by f.origin_city;
 
+-- Part D. Physical Tuning
+-- 1.
+-- a.
+create index origin_city_idx on flights (origin_city);
